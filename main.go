@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"path/filepath"
 	"time"
 
@@ -26,6 +27,8 @@ type Image struct {
 }
 
 func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
+	rand.Seed(time.Now().UnixNano())
+
 	infos, err := ioutil.ReadDir(dirPath)
 	if err != nil {
 		return nil, errors.Wrap(err, "faild to read directory")
@@ -34,13 +37,13 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 	files := make(map[string][]byte, filesLimit)
 
 	cnt := 0
-	for _, info := range infos {
+	for i := 0; i < filesLimit; i++ {
 		if cnt == filesLimit {
 			break
 		}
 
-		path := filepath.Join(dirPath, info.Name())
-		// 一気に読むのは良くないけど、今日だけ...
+		path := filepath.Join(dirPath, infos[rand.Intn(len(infos))].Name())
+
 		d, err := ioutil.ReadFile(path)
 		if err != nil {
 			return nil, errors.Wrap(err, "faild to read file")
