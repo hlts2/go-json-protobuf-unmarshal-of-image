@@ -94,6 +94,7 @@ func protoPerformance(filesMap map[string][]byte, imageCnt int) error {
 	fmt.Printf("proto unmarshal check. image count: %d\n", imageCnt)
 
 	start := time.Now()
+
 	req := &pb.ImageRequest{}
 	proto.Unmarshal(data, req)
 
@@ -117,7 +118,7 @@ func getProtoData(filesMap map[string][]byte) ([]byte, error) {
 }
 
 func main() {
-	counts := []int{4, 10, 20}
+	counts := []int{4, 10, 20, 50, 100}
 	for _, count := range counts {
 		m, err := getFiles("./images", count)
 		if err != nil {
