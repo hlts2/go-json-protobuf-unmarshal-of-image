@@ -54,7 +54,7 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 }
 
 func jsonPerformance(filesMap map[string][]byte, imageCnt int) error {
-	data, err := getJSONData(filesMap)
+	data, err := genJSONData(filesMap)
 	if err != nil {
 		return errors.Wrap(err, "faild to execute json performance test")
 	}
@@ -70,7 +70,7 @@ func jsonPerformance(filesMap map[string][]byte, imageCnt int) error {
 	return nil
 }
 
-func getJSONData(filesMap map[string][]byte) ([]byte, error) {
+func genJSONData(filesMap map[string][]byte) ([]byte, error) {
 	request := &ImageRequest{
 		Images: make([]*Image, 0, len(filesMap)),
 	}
@@ -86,7 +86,7 @@ func getJSONData(filesMap map[string][]byte) ([]byte, error) {
 }
 
 func protoPerformance(filesMap map[string][]byte, imageCnt int) error {
-	data, err := getProtoData(filesMap)
+	data, err := genProtoData(filesMap)
 	if err != nil {
 		return errors.Wrap(err, "faild to execute proto protoPerformance check")
 	}
@@ -102,7 +102,7 @@ func protoPerformance(filesMap map[string][]byte, imageCnt int) error {
 	return nil
 }
 
-func getProtoData(filesMap map[string][]byte) ([]byte, error) {
+func genProtoData(filesMap map[string][]byte) ([]byte, error) {
 	request := &pb.ImageRequest{
 		Images: make([]*pb.ImageRequest_Image, 0, len(filesMap)),
 	}
