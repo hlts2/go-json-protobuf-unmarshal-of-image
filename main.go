@@ -30,6 +30,7 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 
 	for _, info := range infos {
 		path := filepath.Join(dirPath, info.Name())
+		// 一気に読むのは良くないけど、今日だけ...
 		d, err := ioutil.ReadFile(path)
 		if err != nil {
 			return nil, errors.Wrap(err, "faild to read file")
