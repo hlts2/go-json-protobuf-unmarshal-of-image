@@ -31,9 +31,13 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 		return nil, errors.Wrap(err, "faild to read directory")
 	}
 
-	files := make(map[string][]byte, len(infos))
+	files := make(map[string][]byte, filesLimit)
 
+	cnt := 1
 	for _, info := range infos {
+		if cnt == filesLimit {
+			break
+		}
 		path := filepath.Join(dirPath, info.Name())
 		// 一気に読むのは良くないけど、今日だけ...
 		d, err := ioutil.ReadFile(path)
@@ -41,6 +45,8 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 			return nil, errors.Wrap(err, "faild to read file")
 		}
 		files[path] = d
+
+		cnt++
 	}
 	return files, nil
 }
