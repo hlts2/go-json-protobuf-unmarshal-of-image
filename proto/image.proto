@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+message ImageRequest {
+    message Image {
+        string uuid = 1;
+        string encoded = 2;
+    }
+
+    repeated Image images = 1;
+}
