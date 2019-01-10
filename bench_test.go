@@ -3,11 +3,10 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
 	"math/rand"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/gogo/protobuf/proto"
@@ -56,21 +55,9 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 	return files, nil
 }
 
-func jsonPerformance(filesMap map[string][]byte, imageCnt int) error {
-	data, err := genJSONData(filesMap)
-	if err != nil {
-		return errors.Wrap(err, "faild to execute json performance test")
-	}
-
-	fmt.Printf("json unmarshal check. image count: %d\n", imageCnt)
-	start := time.Now()
-
+func jsonPerformance(data []byte, imageCnt int) {
 	req := ImageRequest{}
 	json.Unmarshal(data, &req)
-
-	fmt.Println(time.Since(start))
-
-	return nil
 }
 
 func genJSONData(filesMap map[string][]byte) ([]byte, error) {
@@ -88,21 +75,9 @@ func genJSONData(filesMap map[string][]byte) ([]byte, error) {
 	return json.Marshal(request)
 }
 
-func protoPerformance(filesMap map[string][]byte, imageCnt int) error {
-	data, err := genProtoData(filesMap)
-	if err != nil {
-		return errors.Wrap(err, "faild to execute proto protoPerformance check")
-	}
-
-	fmt.Printf("proto unmarshal check. image count: %d\n", imageCnt)
-
-	start := time.Now()
-
+func protoPerformance(data []byte, imageCnt int) {
 	req := &pb.ImageRequest{}
 	proto.Unmarshal(data, req)
-
-	fmt.Println(time.Since(start))
-	return nil
 }
 
 func genProtoData(filesMap map[string][]byte) ([]byte, error) {
@@ -120,15 +95,29 @@ func genProtoData(filesMap map[string][]byte) ([]byte, error) {
 	return proto.Marshal(request)
 }
 
-func main() {
-	counts := []int{4, 10, 20, 50, 100}
-	for _, count := range counts {
-		m, err := getFiles("./images", count)
-		if err != nil {
-			log.Fatal(err)
-		}
+func BenchmarkJsonPerformanceTest(b *testing.B) {
+	b.Run("Json performance: 4", func(b *testing.B) {
+		count := 4
 
-		jsonPerformance(m, count)
-		protoPerformance(m, count)
-	}
+		for i := 0; i < b.N; i++ {
+
+			b.StopTimer()
+
+			m, err := getFiles("./images", count)
+			if err != nil {
+				b.Fatal(errors.Wrap(err, "faild to get file datas"))
+			}
+
+			data, err := genJSONData(m)
+			if err != nil {
+				b.Fatal(errors.Wrap(err, "faild to generate json data"))
+			}
+
+			b.StartTimer()
+
+			jsonPerformance(data, count)
+		}
+	})
 }
+
+func BencharmProtoPerformanceTet(b *testing.B) {}
