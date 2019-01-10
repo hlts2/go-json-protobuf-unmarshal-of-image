@@ -33,11 +33,12 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 
 	files := make(map[string][]byte, filesLimit)
 
-	cnt := 1
+	cnt := 0
 	for _, info := range infos {
 		if cnt == filesLimit {
 			break
 		}
+
 		path := filepath.Join(dirPath, info.Name())
 		// 一気に読むのは良くないけど、今日だけ...
 		d, err := ioutil.ReadFile(path)
@@ -48,6 +49,7 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 
 		cnt++
 	}
+
 	return files, nil
 }
 
@@ -79,6 +81,7 @@ func getJSONData(filesMap map[string][]byte) ([]byte, error) {
 			Encoded: base64.StdEncoding.EncodeToString(d),
 		})
 	}
+
 	return json.Marshal(request)
 }
 
@@ -109,6 +112,7 @@ func getProtoData(filesMap map[string][]byte) ([]byte, error) {
 			Data: d,
 		})
 	}
+
 	return proto.Marshal(request)
 }
 
@@ -121,7 +125,6 @@ func main() {
 		}
 
 		jsonPerformance(m, count)
-
 		protoPerformance(m, count)
 	}
 }
