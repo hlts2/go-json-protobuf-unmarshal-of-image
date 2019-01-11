@@ -1,2 +1,24 @@
 # Golang Unmarshal Benchmark
-benchmark of unmarshalling image data by JSON and Protobuf
+Benchmark of unmarshalling image data by JSON and Protobuf
+
+## Description
+
+
+## Installation
+
+```
+go get github.com/hlts2/go-json-protobuf-unmarshal-of-image
+```
+
+## Usage
+
+### Image Data
+You must ceate image files into the `go-json-protobuf-unmarshal-of-image/images`
+
+### Benchmark
+
+```
+go test -bench . -benchmem
+```
+
+# Conclusion
