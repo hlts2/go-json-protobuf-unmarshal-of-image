@@ -110,7 +110,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 	for _, bc := range cases {
 		filesMap, err := getFiles("./images", bc.imageCnt)
 		if err != nil {
-			b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
+			b.Fatal(errors.Wrap(err, "faild to get files from directory"))
 		}
 
 		pbData, err := genProtobuf(filesMap)
