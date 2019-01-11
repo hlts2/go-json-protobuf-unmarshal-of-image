@@ -1,5 +1,5 @@
 # Golang Unmarshal Benchmark
-Benchmark of unmarshalling image data by JSON and Protobuf
+Benchmark of unmarshalling image data by JSON and Protocol Buffers
 
 ## Description
 
