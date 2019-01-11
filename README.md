@@ -27,3 +27,4 @@ go test -bench . -benchmem
 ## Benchmark Result
 
 # Conclusion
+The data amount of Protocol Buffers is smaller than JSON, and unmarshal can be performed at high speed.
