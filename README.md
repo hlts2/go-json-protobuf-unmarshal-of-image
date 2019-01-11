@@ -24,4 +24,6 @@ You must ceate image files into the `go-json-protobuf-unmarshal-of-image/images`
 go test -bench . -benchmem
 ```
 
+## Benchmark Result
+
 # Conclusion
