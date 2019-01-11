@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
-	pb "github.com/hlts2/protobuf_unmarshal_v2_json_unmarshal/proto"
+	pb "github.com/hlts2/json_protobuf_unmarshal/proto"
 	"github.com/pkg/errors"
 )
 
@@ -126,7 +126,6 @@ func BenchmarkUnmarshal(b *testing.B) {
 		b.ResetTimer()
 
 		b.Run(fmt.Sprintf("JsonUnmarshalOf%dfiles", bc.imageCnt), func(b *testing.B) {
-			b.SetBytes(int64(len(jsonData)))
 			b.Log(fmt.Sprintf("protobuf size: %d", len(jsonData)))
 			for i := 0; i < b.N; i++ {
 				jsonUnmarshal(jsonData)
@@ -134,7 +133,6 @@ func BenchmarkUnmarshal(b *testing.B) {
 		})
 
 		b.Run(fmt.Sprintf("ProtoUnmarshalOf%dfiles", bc.imageCnt), func(b *testing.B) {
-			b.SetBytes(int64(len(pbData)))
 			b.Log(fmt.Sprintf("protobuf size: %d", len(pbData)))
 			for i := 0; i < b.N; i++ {
 				protoUnmarshal(pbData)
