@@ -126,13 +126,15 @@ func BenchmarkUnmarshal(b *testing.B) {
 		b.ResetTimer()
 
 		b.Run(fmt.Sprintf("JsonUnmarshalOf%dfiles", bc.imageCnt), func(b *testing.B) {
-			b.Log(fmt.Sprintf("json size: %d", len(jsonData)))
+			b.SetBytes(int64(len(jsonData)))
+			b.Log(fmt.Sprintf("protobuf size: %d", len(jsonData)))
 			for i := 0; i < b.N; i++ {
 				jsonUnmarshal(jsonData)
 			}
 		})
 
 		b.Run(fmt.Sprintf("ProtoUnmarshalOf%dfiles", bc.imageCnt), func(b *testing.B) {
+			b.SetBytes(int64(len(pbData)))
 			b.Log(fmt.Sprintf("protobuf size: %d", len(pbData)))
 			for i := 0; i < b.N; i++ {
 				protoUnmarshal(pbData)
