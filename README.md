@@ -25,7 +25,7 @@ go test -bench . -benchmem
 ```
 
 ## Benchmark Result
-In my environment the image size per sheet is about 20 KB.
+In my environment, the image size per sheet is about 20 KB.
 
 The following is the result of unmarshaling multiple images.
 
