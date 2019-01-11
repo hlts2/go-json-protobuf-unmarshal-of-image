@@ -10,6 +10,9 @@ Benchmark of unmarshalling image data by JSON and Protocol Buffers
 go get github.com/hlts2/go-json-protobuf-unmarshal-of-image
 ```
 
+## Motivation
+In golang, compare them to make a performance-oriented choice when handle image data with JSON or Protocol Buffers
+
 ## Usage
 
 ### Image Data
