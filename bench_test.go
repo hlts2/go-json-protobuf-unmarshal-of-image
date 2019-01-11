@@ -105,6 +105,7 @@ func BenchmarkUnmarshal(b *testing.B) {
 		{imageCnt: 20},
 		{imageCnt: 50},
 		{imageCnt: 100},
+		{imageCnt: 150},
 	}
 
 	for _, bc := range cases {
