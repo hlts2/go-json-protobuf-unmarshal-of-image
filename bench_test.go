@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gogo/protobuf/proto"
-	pb "github.com/hlts2/json_protobuf_unmarshal/proto"
+	pb "github.com/hlts2/go-json-protobuf-unmarshal-of-image/proto"
 	"github.com/pkg/errors"
 )
 
