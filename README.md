@@ -16,7 +16,7 @@ In golang, compare them to make a performance-oriented choice when handle image 
 ## Usage
 
 ### Image Data
-You must ceate image files into the `go-json-protobuf-unmarshal-of-image/images`
+You must ceate image files into the `go-json-protobuf-unmarshal-of-image/images`.
 
 ### Benchmark
 
