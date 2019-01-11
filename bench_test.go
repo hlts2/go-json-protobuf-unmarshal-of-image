@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/base64"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"math/rand"
 	"path/filepath"
@@ -55,12 +56,7 @@ func getFiles(dirPath string, filesLimit int) (map[string][]byte, error) {
 	return files, nil
 }
 
-func genJSONData(dirPath string, filesLimit int) ([]byte, error) {
-	filesMap, err := getFiles(dirPath, filesLimit)
-	if err != nil {
-		return nil, errors.Wrap(err, "faild to get files")
-	}
-
+func genJSONData(filesMap map[string][]byte) ([]byte, error) {
 	request := &ImageRequest{
 		Images: make([]*Image, 0, len(filesMap)),
 	}
@@ -75,12 +71,7 @@ func genJSONData(dirPath string, filesLimit int) ([]byte, error) {
 	return json.Marshal(request)
 }
 
-func genProtobuf(dirPath string, filesLimit int) ([]byte, error) {
-	filesMap, err := getFiles(dirPath, filesLimit)
-	if err != nil {
-		return nil, errors.Wrap(err, "faild to get files")
-	}
-
+func genProtobuf(filesMap map[string][]byte) ([]byte, error) {
 	request := &pb.ImageRequest{
 		Images: make([]*pb.ImageRequest_Image, 0, len(filesMap)),
 	}
@@ -95,196 +86,57 @@ func genProtobuf(dirPath string, filesLimit int) ([]byte, error) {
 	return proto.Marshal(request)
 }
 
-func jsonPerformance(data []byte, imageCnt int) {
+func jsonUnmarshal(data []byte) {
 	req := ImageRequest{}
 	json.Unmarshal(data, &req)
 }
 
-func protoPerformance(data []byte, imageCnt int) {
-	req := &pb.ImageRequest{}
-	proto.Unmarshal(data, req)
+func protoUnmarshal(data []byte) {
+	req := pb.ImageRequest{}
+	proto.Unmarshal(data, &req)
 }
 
-func BenchmarkJsonPerformanceTest(b *testing.B) {
-	b.Run("Json performance: 4", func(b *testing.B) {
-		count := 4
+func BenchmarkUnmarshal(b *testing.B) {
+	cases := []struct {
+		imageCnt int
+	}{
+		{imageCnt: 4},
+		{imageCnt: 10},
+		{imageCnt: 20},
+		{imageCnt: 50},
+		{imageCnt: 100},
+	}
 
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genJSONData("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate json data"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
+	for _, bc := range cases {
+		filesMap, err := getFiles("./images", bc.imageCnt)
+		if err != nil {
+			b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
 		}
-	})
 
-	b.Run("Json performance: 10", func(b *testing.B) {
-		count := 10
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genJSONData("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate json data"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
+		pbData, err := genProtobuf(filesMap)
+		if err != nil {
+			b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
 		}
-	})
 
-	b.Run("Json performance: 20", func(b *testing.B) {
-		count := 20
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genJSONData("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate json data"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
+		jsonData, err := genJSONData(filesMap)
+		if err != nil {
+			b.Fatal(errors.Wrap(err, "faild to generate json data"))
 		}
-	})
 
-	b.Run("Json performance: 50", func(b *testing.B) {
-		count := 50
+		b.ResetTimer()
 
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genJSONData("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate json data"))
+		b.Run(fmt.Sprintf("JsonUnmarshalOf%dfiles", bc.imageCnt), func(b *testing.B) {
+			b.Log(fmt.Sprintf("json size: %d", len(jsonData)))
+			for i := 0; i < b.N; i++ {
+				jsonUnmarshal(jsonData)
 			}
+		})
 
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
-
-	b.Run("Json performance: 100", func(b *testing.B) {
-		count := 100
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genJSONData("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate json data"))
+		b.Run(fmt.Sprintf("ProtoUnmarshalOf%dfiles", bc.imageCnt), func(b *testing.B) {
+			b.Log(fmt.Sprintf("protobuf size: %d", len(pbData)))
+			for i := 0; i < b.N; i++ {
+				protoUnmarshal(pbData)
 			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
-}
-
-func BenchmarkProtoPerformanceTest(b *testing.B) {
-	b.Run("protobuf performance: 4", func(b *testing.B) {
-		count := 4
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genProtobuf("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
-
-	b.Run("protobuf performance: 10", func(b *testing.B) {
-		count := 10
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genProtobuf("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
-
-	b.Run("protobuf performance: 20", func(b *testing.B) {
-		count := 20
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genProtobuf("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
-
-	b.Run("protobuf performance: 50", func(b *testing.B) {
-		count := 50
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genProtobuf("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
-
-	b.Run("protobuf performance: 100", func(b *testing.B) {
-		count := 100
-
-		for i := 0; i < b.N; i++ {
-
-			b.StopTimer()
-
-			data, err := genProtobuf("./images", count)
-			if err != nil {
-				b.Fatal(errors.Wrap(err, "faild to generate protobuf"))
-			}
-
-			b.StartTimer()
-
-			jsonPerformance(data, count)
-		}
-	})
+		})
+	}
 }
